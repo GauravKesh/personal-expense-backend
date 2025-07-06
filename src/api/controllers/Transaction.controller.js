@@ -47,21 +47,23 @@ const createTransaction = async (req, res) => {
 
 const updateTransaction = async (req, res) => {
     try {
-        const { amount, description, date, type, category } = req.body;
+        const updateData = req.body;
 
-        if (!amount || !description || !type || !category) {
-            return res.status(400).json({ error: 'All fields are required' });
+        if (updateData.type) {
+            if (!['income', 'expense'].includes(updateData.type)) {
+                return res.status(400).json({ error: 'Invalid transaction type' });
+            }
+
+            if (updateData.type === 'expense' && !updateData.category) {
+                return res.status(400).json({ error: 'Category is required for expense transactions' });
+            }
         }
 
         const updatedTransaction = await Transaction.findByIdAndUpdate(
             req.params.id,
-            { amount, description, date, type, category },
+            updateData,
             { new: true }
         ).populate('category');
-
-        if (!updatedTransaction) {
-            return res.status(404).json({ error: 'Transaction not found' });
-        }
 
         res.json(updatedTransaction);
     } catch (err) {
