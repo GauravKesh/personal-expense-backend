@@ -58,9 +58,10 @@ const updateTransaction = async (req, res) => {
                 return res.status(400).json({ error: 'Category is required for expense transactions' });
             }
         }
+        const objectId = new mongoose.Types.ObjectId(req.params.id);
 
         const updatedTransaction = await Transaction.findByIdAndUpdate(
-            req.params.id,
+            objectId,
             updateData,
             { new: true }
         ).populate('category');
