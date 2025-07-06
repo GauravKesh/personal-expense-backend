@@ -1,3 +1,5 @@
+const mongoose = require('mongoose')
+
 const Transaction = require('../../models/Transaction.model');
 
 
