@@ -50,6 +50,7 @@ const createTransaction = async (req, res) => {
 const updateTransaction = async (req, res) => {
     try {
         const updateData = req.body;
+        console.log(updateData);
 
         if (updateData.type) {
             if (!['income', 'expense'].includes(updateData.type)) {
@@ -59,7 +60,13 @@ const updateTransaction = async (req, res) => {
             if (updateData.type === 'expense' && !updateData.category) {
                 return res.status(400).json({ error: 'Category is required for expense transactions' });
             }
+
+            // If type is income, remove category to avoid casting error
+            if (updateData.type === 'income') {
+                delete updateData.category;
+            }
         }
+
         const objectId = new mongoose.Types.ObjectId(req.params.id);
 
         const updatedTransaction = await Transaction.findByIdAndUpdate(
@@ -74,7 +81,7 @@ const updateTransaction = async (req, res) => {
         res.status(500).json({ error: 'Failed to update transaction' });
     }
 };
-
+  
 
 const deleteTransaction = async (req, res) => {
     try {
